@@ -1,8 +1,20 @@
 import express from 'express';
-import axios from 'axios';
 
 const router = express.Router();
 const NEWS_API_BASE = 'https://newsapi.org/v2';
+
+/** Helper: fetch JSON from News API and handle errors */
+async function fetchNewsApi(url) {
+  const res = await fetch(url);
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const err = new Error(data.message || res.statusText || 'News API request failed');
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
 
 /**
  * GET /api/news/everything
@@ -32,11 +44,11 @@ router.get('/everything', async (req, res) => {
     if (domains) params.append('domains', domains);
     if (language) params.append('language', language);
 
-    const { data } = await axios.get(`${NEWS_API_BASE}/everything?${params}`);
+    const data = await fetchNewsApi(`${NEWS_API_BASE}/everything?${params}`);
     res.json(data);
   } catch (err) {
-    const status = err.response?.status || 500;
-    const message = err.response?.data?.message || err.message;
+    const status = err.status || 500;
+    const message = err.data?.message || err.message;
     res.status(status).json({ error: message });
   }
 });
@@ -59,11 +71,11 @@ router.get('/top-headlines', async (req, res) => {
     if (sources) params.append('sources', sources);
     if (q) params.append('q', q);
 
-    const { data } = await axios.get(`${NEWS_API_BASE}/top-headlines?${params}`);
+    const data = await fetchNewsApi(`${NEWS_API_BASE}/top-headlines?${params}`);
     res.json(data);
   } catch (err) {
-    const status = err.response?.status || 500;
-    const message = err.response?.data?.message || err.message;
+    const status = err.status || 500;
+    const message = err.data?.message || err.message;
     res.status(status).json({ error: message });
   }
 });
@@ -85,11 +97,11 @@ router.get('/sources', async (req, res) => {
     if (language) params.append('language', language);
     if (country) params.append('country', country);
 
-    const { data } = await axios.get(`${NEWS_API_BASE}/sources?${params}`);
+    const data = await fetchNewsApi(`${NEWS_API_BASE}/sources?${params}`);
     res.json(data);
   } catch (err) {
-    const status = err.response?.status || 500;
-    const message = err.response?.data?.message || err.message;
+    const status = err.status || 500;
+    const message = err.data?.message || err.message;
     res.status(status).json({ error: message });
   }
 });
@@ -114,11 +126,11 @@ router.get('/apple-today', async (req, res) => {
       apiKey,
     });
 
-    const { data } = await axios.get(`${NEWS_API_BASE}/everything?${params}`);
+    const data = await fetchNewsApi(`${NEWS_API_BASE}/everything?${params}`);
     res.json(data);
   } catch (err) {
-    const status = err.response?.status || 500;
-    const message = err.response?.data?.message || err.message;
+    const status = err.status || 500;
+    const message = err.data?.message || err.message;
     res.status(status).json({ error: message });
   }
 });

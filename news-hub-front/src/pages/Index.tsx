@@ -257,8 +257,7 @@ const Index = () => {
           <div className="flex flex-col items-center justify-center py-28 gap-4">
             <Newspaper className="h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm font-medium text-destructive text-center max-w-xs">
-              Could not load news. Make sure the backend server is running on
-              port 3001.
+              Could not load news. Please try again later.
             </p>
           </div>
         )}
