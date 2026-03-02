@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NewsHub — Curated News Across Every Industry</title>
+    <meta name="description" content="Stay ahead with curated news across technology, business, health, science, sports and entertainment." />
+    <meta name="author" content="NewsHub" />
+    <!-- Prevent dark/light flash before React hydrates -->
+    <script>
+      try {
+        if (localStorage.getItem("newshub_theme") !== "light") {
+          document.documentElement.classList.add("dark");
+        }
+      } catch (_) {}
+    </script>
+
+    <meta property="og:title" content="NewsHub — Curated Tech News" />
+    <meta property="og:description" content="Stay ahead with curated tech news from top publishers." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@Lovable" />
+    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
