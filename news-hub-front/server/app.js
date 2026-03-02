@@ -28,6 +28,14 @@ app.use(express.json());
 app.use('/api/news', newsRoutes);
 app.use('/api/gemini', geminiRoutes);
 
+app.get('/', (req, res) => {
+  res.json({
+    name: 'NewsHub API',
+    status: 'ok',
+    docs: 'Use /api for endpoints. Example: GET /api/news/top-headlines?country=us&category=technology',
+  });
+});
+
 app.get('/api', (req, res) => {
   res.json({
     name: 'NewsHub API',
