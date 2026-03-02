@@ -27,6 +27,8 @@ export interface Article {
   externalUrl: string;
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "";
+
 const FALLBACK_THUMBNAIL =
   "https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&h=400&fit=crop";
 
@@ -70,7 +72,7 @@ export async function fetchTopHeadlines(
   category: string = "technology"
 ): Promise<Article[]> {
   const res = await fetch(
-    `/api/news/top-headlines?country=us&category=${category}&pageSize=12`
+    `${API_BASE}/api/news/top-headlines?country=us&category=${category}&pageSize=12`
   );
   if (!res.ok) throw new Error("Failed to fetch news");
   const data = await res.json();
@@ -83,7 +85,7 @@ export async function sendChatMessage(
   articleTitle: string,
   userMessage: string
 ): Promise<string> {
-  const res = await fetch("/api/gemini/chat", {
+  const res = await fetch(`${API_BASE}/api/gemini/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
