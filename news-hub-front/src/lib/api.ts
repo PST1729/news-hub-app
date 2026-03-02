@@ -81,16 +81,36 @@ export async function fetchTopHeadlines(
     .map((a, i) => mapArticle(a, i, category));
 }
 
+export interface ConversationMessage {
+  role: "user" | "bot";
+  text: string;
+}
+
 export async function sendChatMessage(
   articleTitle: string,
-  userMessage: string
+  userMessage: string,
+  history: ConversationMessage[] = []
 ): Promise<string> {
+  const historyLines = history
+    .map((m) => `${m.role === "user" ? "User" : "Assistant"}: ${m.text}`)
+    .join("\n");
+
+  const prompt = [
+    `You are a helpful news article assistant. The user is reading an article titled: "${articleTitle}".`,
+    `Always keep your answers relevant to this article and topic.`,
+    historyLines
+      ? `\nConversation so far:\n${historyLines}`
+      : "",
+    `\nNow respond to the following:\nUser: ${userMessage}`,
+    `\nBe clear and concise (2–4 sentences). Use the conversation history above for context when answering follow-up questions.`,
+  ]
+    .filter(Boolean)
+    .join("\n");
+
   const res = await fetch(`${API_BASE}/api/gemini/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      prompt: `You are a helpful news article assistant. The user is reading an article titled: "${articleTitle}". Answer the following question about this topic in 2-3 clear sentences.\n\nUser: ${userMessage}`,
-    }),
+    body: JSON.stringify({ prompt }),
   });
   if (!res.ok) throw new Error("Failed to get AI response");
   const data = await res.json();
