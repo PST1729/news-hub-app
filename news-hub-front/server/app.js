@@ -1,17 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import newsRoutesModule from './routes/news.js';
-import geminiRoutesModule from './routes/gemini.js';
 
-// Unwrap default export — Netlify bundling can wrap ESM defaults as { default: router }
 const newsRoutes = newsRoutesModule?.default ?? newsRoutesModule;
-const geminiRoutes = geminiRoutesModule?.default ?? geminiRoutesModule;
 
 const app = express();
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : null; // null = allow all (for Netlify's dynamic preview URLs)
+  : null;
 
 app.use(
   cors({
@@ -20,13 +17,12 @@ app.use(
           if (!origin || allowedOrigins.includes(origin)) callback(null, true);
           else callback(new Error(`CORS: origin ${origin} not allowed`));
         }
-      : true, // Allow all when ALLOWED_ORIGINS not set
+      : true,
   })
 );
 app.use(express.json());
 
 app.use('/api/news', newsRoutes);
-app.use('/api/gemini', geminiRoutes);
 
 app.get('/', (req, res) => {
   res.json({
@@ -45,7 +41,6 @@ app.get('/api', (req, res) => {
       topHeadlines: 'GET /api/news/top-headlines',
       everything: 'GET /api/news/everything',
       sources: 'GET /api/news/sources',
-      chat: 'POST /api/gemini/chat',
     },
   });
 });

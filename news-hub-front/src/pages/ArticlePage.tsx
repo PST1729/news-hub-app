@@ -1,4 +1,3 @@
-import ChatBot from "@/components/ChatBot";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchTopHeadlines, getCategoryColor } from "@/lib/api";
@@ -384,7 +383,6 @@ const ArticlePage = () => {
         )}
       </motion.main>
 
-      <ChatBot articleTitle={article.title} />
     </div>
   );
 };
