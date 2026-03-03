@@ -57,15 +57,35 @@ const Index = () => {
   const { history: readingHistory, clearHistory } = useReadingHistory();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) return;
-    setSubscribed(true);
-    toast.success("You're subscribed!", {
-      description: `We'll send the best stories to ${email}`,
-      duration: 3500,
-    });
+    if (!email.trim() || subscribing) return;
+
+    setSubscribing(true);
+    try {
+      const res = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Subscription failed");
+
+      setSubscribed(true);
+      toast.success("Check your inbox!", {
+        description: `A confirmation + today's top stories were sent to ${email}`,
+        duration: 5000,
+      });
+    } catch (err) {
+      toast.error("Couldn't subscribe", {
+        description: err instanceof Error ? err.message : "Please try again.",
+        duration: 4000,
+      });
+    } finally {
+      setSubscribing(false);
+    }
   };
 
   const handleBookmarkFeatured = (article: Article) => {
@@ -539,9 +559,10 @@ const Index = () => {
                   />
                   <button
                     type="submit"
-                    className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 transition-all shadow-md shadow-primary/20 whitespace-nowrap"
+                    disabled={subscribing}
+                    className="rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground hover:brightness-110 transition-all shadow-md shadow-primary/20 whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Subscribe
+                    {subscribing ? "Sending…" : "Subscribe"}
                   </button>
                 </form>
               )}

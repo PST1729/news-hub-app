@@ -4,9 +4,11 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import newsRoutesModule from './routes/news.js';
 import geminiRoutesModule from './routes/gemini.js';
+import newsletterRoutesModule from './routes/newsletter.js';
 
 const newsRoutes = newsRoutesModule?.default ?? newsRoutesModule;
 const geminiRoutes = geminiRoutesModule?.default ?? geminiRoutesModule;
+const newsletterRoutes = newsletterRoutesModule?.default ?? newsletterRoutesModule;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 10000;
@@ -20,6 +22,7 @@ app.use(express.json());
 // ── API routes (must come before static/SPA) ──────────────────────────────
 app.use('/api/news', newsRoutes);
 app.use('/api/gemini', geminiRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
