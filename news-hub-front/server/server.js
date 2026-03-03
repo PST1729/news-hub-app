@@ -1,25 +1,38 @@
 import express from 'express';
+import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import apiApp from './app.js';
+import newsRoutesModule from './routes/news.js';
+import geminiRoutesModule from './routes/gemini.js';
+
+const newsRoutes = newsRoutesModule?.default ?? newsRoutesModule;
+const geminiRoutes = geminiRoutesModule?.default ?? geminiRoutesModule;
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 10000;
 const distPath = path.join(__dirname, '..', 'dist');
 
-const server = express();
+const app = express();
 
-// Serve the built React app (JS, CSS, images, etc.)
-server.use(express.static(distPath));
+app.use(cors({ origin: true }));
+app.use(express.json());
 
-// Mount all /api/* routes from the Express app
-server.use(apiApp);
+// ── API routes (must come before static/SPA) ──────────────────────────────
+app.use('/api/news', newsRoutes);
+app.use('/api/gemini', geminiRoutes);
 
-// SPA fallback — any route not matched above returns index.html
-server.get('*', (_req, res) => {
+app.get('/api/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// ── Static files (built React app) ───────────────────────────────────────
+app.use(express.static(distPath));
+
+// ── SPA fallback (all other routes → index.html) ─────────────────────────
+app.get('*', (_req, res) => {
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
-server.listen(PORT, () => {
-  console.log(`NewsHub server running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`NewsHub running on port ${PORT}`);
 });
